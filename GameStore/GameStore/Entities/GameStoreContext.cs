@@ -11,6 +11,6 @@ namespace GameStore.Entities
         public GameStoreContext(DbContextOptions<GameStoreContext> options) :base(options)
         {
         }
-        public DbSet<User> Users { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
     }
 }
