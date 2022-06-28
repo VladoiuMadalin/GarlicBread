@@ -1,3 +1,4 @@
+using GameStore.DataLayer.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GameStore.Entities;
 
 namespace GameStore
 {
@@ -15,6 +15,8 @@ namespace GameStore
     {
         public static void Main(string[] args)
         {
+            
+            
             //var options = new DbContextOptionsBuilder<GameStoreContext>()
             //   .UseSqlServer(@"Server=DESKTOP-IIALOIB\MSSQLSERVER01;Database=GameStore;Trusted_Connection=True;")
             //   .Options;
