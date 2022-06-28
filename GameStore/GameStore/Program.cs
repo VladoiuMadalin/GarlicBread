@@ -16,7 +16,7 @@ namespace GameStore
         public static void Main(string[] args)
         {
             //var options = new DbContextOptionsBuilder<GameStoreContext>()
-            //   .UseSqlServer(@"Server=.;Database=GameStore;User Id=sa;Password=madalin;")
+            //   .UseSqlServer(@"Server=DESKTOP-IIALOIB\MSSQLSERVER01;Database=GameStore;Trusted_Connection=True;")
             //   .Options;
             //using (var db = new GameStoreContext(options))
             //{

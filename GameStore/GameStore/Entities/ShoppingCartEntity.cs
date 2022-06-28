@@ -7,6 +7,8 @@ namespace GameStore.Entities
 {
     public class ShoppingCartEntity : BaseEntity
     {
-        ICollection<ProductEntity> Products { get; set; }
+       public ICollection<ProductEntity> Products { get; set; }
     }
+
+    
 }

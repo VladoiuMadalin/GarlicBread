@@ -12,5 +12,9 @@ namespace GameStore.Entities
         {
         }
         public DbSet<UserEntity> Users { get; set; }
+        public DbSet<UserEntity> Orders { get; set; }
+        public DbSet<UserEntity> Products { get; set; }
+        public DbSet<UserEntity> ShoppingCarts{ get; set; }
+        
     }
 }
