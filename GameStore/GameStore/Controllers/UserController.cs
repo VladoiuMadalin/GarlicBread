@@ -52,11 +52,11 @@ namespace GameStore.Controllers
                 var saveResult = await _unitOfWork.SaveChangesAsync();
                 return Ok(saveResult);
             }
-            catch(UserExistsException)
+            catch (UserExistsException)
             {
                 return BadRequest("Username exists!");
             }
-            catch(EmailExistsException)
+            catch (EmailExistsException)
             {
                 return BadRequest("Email exists!");
             }
@@ -80,11 +80,62 @@ namespace GameStore.Controllers
                 Token = user_jsonWebToken
             });
         }
+
+        [HttpGet]
+        [Route("all")]
+        //[Authorize]
+        public ActionResult<List<LightUserRequest>> GetAll()
+        {
+            var users = _unitOfWork.Users.GetAll(includeDeleted: false).Select(u => new LightUserRequest
+            {
+                Username = u.Username,
+                Email = u.Email
+            }); ;
+            return Ok(users);
+        }
+
+        [HttpGet]
+        [Route("my-account")]
+        // [Authorize(Roles = "User")]
+        public ActionResult<bool> MyAccount()
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            var user = _unitOfWork.Users.GetById((Guid)userId);
+
+
+            return Ok(new UserRequest
+            {
+                Username = user.Username,
+                Email = user.Email,
+
+            });
+
+
+
+        }
+        [HttpDelete]
+        //[Authorize(Roles = "Admin")]
+        [Route("delete/all")]
+        public async Task<ActionResult<List<UserEntity>>> DeleteAll()
+        {
+            var users = _unitOfWork.Users.GetAll().ToList();
+
+            foreach (var user in users)
+            {
+                _unitOfWork.Users.Delete(user);
+            }
+            await _unitOfWork.SaveChangesAsync();
+            return Ok(users);
+        }
+
+
+
+
+
+
     }
-
-
-
-
 }
 
 //[Route("api/[controller]")]

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class UserRequest:LightUserRequest
+    public class LightUserRequest
     {
-        public int Id { get; set; }
-        public string Password { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
     }
 }
