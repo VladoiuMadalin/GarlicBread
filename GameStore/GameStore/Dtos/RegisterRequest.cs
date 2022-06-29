@@ -21,5 +21,9 @@ namespace GameStore.Dtos
         [Required(ErrorMessage = "Password required!")]
         [MinLength(4, ErrorMessage = "Password must be at least 4 characters long!")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Role required!")]
+        [MaxLength(10, ErrorMessage = "Role too long")]
+        public string Role { get; set; }
     }
 }

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class UserRequest : LightUserRequest
+    public class OrderDto
     {
-        public ICollection<OrderDto> Orders { get; set; }
+        public ICollection<ProductDto> Products { get; set; }
     }
 }

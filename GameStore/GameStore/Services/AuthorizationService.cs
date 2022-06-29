@@ -39,15 +39,16 @@ namespace GameStore.Services
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_securityKey));
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                var roleClaim = new Claim("role", "User");
+                var roleClaim = new Claim("role", user.Role.ToString());
                 var idClaim = new Claim("userId", user.Id.ToString());
-                var infoClaim = new Claim("username", user.Email);
+                var usernameClaim = new Claim("username", user.Username);
+                var emailClaim = new Claim("username", user.Email);
 
                 var tokenDescriptior = new SecurityTokenDescriptor
                 {
                     Issuer = "Backend",
                     Audience = "Frontend",
-                    Subject = new ClaimsIdentity(new[] { roleClaim, idClaim, infoClaim }),
+                    Subject = new ClaimsIdentity(new[] { roleClaim, idClaim, usernameClaim, emailClaim }),
                     Expires = DateTime.Now.AddYears(1),
                     SigningCredentials = credentials
                 };
