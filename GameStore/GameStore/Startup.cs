@@ -97,7 +97,7 @@ namespace GameStore
         {
             services
                 .AddDbContext<GameStoreContext>(options => options
-                    .UseSqlServer(Configuration.GetConnectionString("VladConnection")));
+                    .UseSqlServer(Configuration.GetConnectionString("MadalinConnection")));
 
             // Repositories
            // services.AddScoped<UserRepository>(new UserRepository());
