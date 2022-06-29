@@ -26,7 +26,7 @@ namespace GameStore.DataLayer.Entities
                    .SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.Development.json")
                    .Build();
-                var connectionString = configuration.GetConnectionString("MadaliConnection");
+                var connectionString = configuration.GetConnectionString("VladConnection");
                 optionsBuilder.UseSqlServer(connectionString);
             }
         }

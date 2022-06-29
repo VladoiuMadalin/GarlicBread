@@ -23,12 +23,12 @@ namespace GameStore.DataLayer.Repositories.Classes
 
         public override void Insert(OrderEntity record)
         {
-            var userOrderExists = _dbSet.Any(x => x.User == record.User);
+            //var userOrderExists = _dbSet.Any(x => x.User == record.User);
 
-            if (userOrderExists)
-            {
-                throw new OrderForUserExistsException();
-            }
+            //if (userOrderExists)
+            //{
+            //    throw new OrderForUserExistsException();
+            //}
 
             if (_db.Entry(record).State == EntityState.Detached)
             {

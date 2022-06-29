@@ -5,7 +5,18 @@ using System.Threading.Tasks;
 
 namespace GameStore.Exceptions
 {
-    public class ShoppingCartForUserException
+    public class ShoppingCartForUserExistsException : Exception
     {
+        public ShoppingCartForUserExistsException()
+        {
+        }
+
+        public ShoppingCartForUserExistsException(string message) : base(message)
+        {
+        }
+
+        public ShoppingCartForUserExistsException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }

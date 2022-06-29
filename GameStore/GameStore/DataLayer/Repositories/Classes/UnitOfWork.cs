@@ -1,4 +1,5 @@
 ﻿using GameStore.DataLayer.Entities;
+using GameStore.DataLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,9 @@ namespace GameStore.DataLayer.Repositories
         private readonly DbContext _dbContext;
 
         public IUserRepository Users { get; set; }
+        public IOrderRepository Orders { get; set; }
+        public IShoppingCartRepository ShoppingCarts { get; set; }
+        public IProductRepository Products{ get; set; }
 
         public UnitOfWork(GameStoreContext context, IUserRepository users)
         {

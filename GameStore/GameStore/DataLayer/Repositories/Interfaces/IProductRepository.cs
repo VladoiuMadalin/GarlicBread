@@ -8,6 +8,6 @@ namespace GameStore.DataLayer.Repositories.Interfaces
 {
     public interface IProductRepository: IRepositoryBase<ProductEntity>
     {
-        ProductEntity GetProductByTitle(string name);
+        ProductEntity GetProductByTitle(string title);
     }
 }
