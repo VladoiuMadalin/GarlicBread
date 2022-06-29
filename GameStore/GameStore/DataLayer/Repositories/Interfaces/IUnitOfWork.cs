@@ -12,6 +12,7 @@ namespace GameStore.DataLayer.Repositories
         IProductRepository Products { get; }
         IShoppingCartRepository ShoppingCarts { get; }
         IOrderRepository Orders { get; }
+        ICreditCardRepository CreditCards { get; }
         //INotificationsRepository Notifications { get; set; }
 
         Task<bool> SaveChangesAsync();

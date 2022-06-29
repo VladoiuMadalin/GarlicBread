@@ -72,7 +72,7 @@ namespace GameStore.Controllers
         [HttpDelete]
         //[Authorize(Roles = "Admin")]
         [Route("deleteAllOrders")]
-        public async Task<ActionResult<List<ProductEntity>>> DeleteAllOrders(UserEntity user)
+        public async Task<ActionResult<List<OrderEntity>>> DeleteAllOrders(UserEntity user)
         {
             var orders = _unitOfWork.Orders.GetAll().Where(o=>o.User==user).ToList(); //?????
 
