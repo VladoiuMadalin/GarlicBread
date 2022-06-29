@@ -17,6 +17,7 @@ namespace GameStore.DataLayer.Entities
         public DbSet<UserEntity> Orders { get; set; }
         public DbSet<UserEntity> Products { get; set; }
         public DbSet<UserEntity> ShoppingCarts{ get; set; }
+        public DbSet<CreditCardEntity> CreditCards { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -26,7 +27,7 @@ namespace GameStore.DataLayer.Entities
                    .SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.Development.json")
                    .Build();
-                var connectionString = configuration.GetConnectionString("VladConnection");
+                var connectionString = configuration.GetConnectionString("MadalinConnection");
                 optionsBuilder.UseSqlServer(connectionString);
             }
         }

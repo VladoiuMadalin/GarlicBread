@@ -4,6 +4,7 @@ using GameStore.DataLayer.Repositories;
 using GameStore.Dtos;
 using GameStore.Exceptions;
 using GameStore.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,22 +17,23 @@ using System.Threading.Tasks;
 namespace GameStore.Controllers
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("api/products")]
     public class ProductController : WebApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICustomerAuthService _authorization;
+        // private readonly ICustomerAuthService _authorization;
 
-        public ProductController(IUnitOfWork unitOfWork, ICustomerAuthService authorization)
+        public ProductController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _authorization = authorization;
+            //_authorization = authorization;
         }
 
 
         [HttpPost]
-        [Route("insertProduct")]
-        public async Task<ActionResult<bool>> InsertProduct([FromBody] ProductRequest request)
+        [Route("insert")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<bool>> InsertProduct([FromBody] ProductDto request)
         {
             if (request == null)
             {
@@ -42,8 +44,6 @@ namespace GameStore.Controllers
             {
                 Title = request.Title,
                 Price = request.Price,
-                //Orders=new ICollection<OrderEntity>
-                //ShoppingCarts= new ICollection<ShoppingCartEntity>
             };
 
             try
@@ -52,7 +52,7 @@ namespace GameStore.Controllers
                 var saveResult = await _unitOfWork.SaveChangesAsync();
                 return Ok(saveResult);
             }
-            catch(TitleExistsException)
+            catch (TitleExistsException)
             {
                 return BadRequest("Title exists!");
             }
@@ -62,8 +62,8 @@ namespace GameStore.Controllers
         }
 
         [HttpGet]
-        [Route("allProducts")]
-        //[Authorize]
+        [Route("all")]
+        [Authorize]
         public ActionResult<List<ProductRequest>> GetAllProducts()
         {
             var products = _unitOfWork.Products.GetAll(includeDeleted: false).Select(p => new ProductRequest
@@ -76,8 +76,8 @@ namespace GameStore.Controllers
 
 
         [HttpDelete]
-        //[Authorize(Roles = "Admin")]
-        [Route("deleteAllProducts")]
+        [Authorize(Roles = "Admin")]
+        [Route("deleteAll")]
         public async Task<ActionResult<List<ProductEntity>>> DeleteAllProducts()
         {
             var products = _unitOfWork.Products.GetAll().ToList();
@@ -91,8 +91,8 @@ namespace GameStore.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "Admin")]
-        [Route("deleteOneProduct")]
+        [Authorize(Roles = "Admin")]
+        [Route("delete")]
         public async Task<ActionResult<List<ProductEntity>>> DeleteAProduct([FromBody] LightProductRequest request)
         {
             var products = _unitOfWork.Products.GetAll().ToList();
@@ -100,13 +100,30 @@ namespace GameStore.Controllers
             foreach (var product in products)
             {
                 if (product.Title == title)
-                {   
+                {
                     _unitOfWork.Products.Delete(product);
                     break;
                 }
             }
             await _unitOfWork.SaveChangesAsync();
             return Ok(products);
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        [Route("deleteById")]
+        public async Task<ActionResult<List<ProductEntity>>> DeleteById([FromBody] DeleteRequest request)
+        {
+            try
+            {
+                _unitOfWork.Products.DeleteById(request.Id);
+                await _unitOfWork.SaveChangesAsync();
+                return Ok();
+            }
+            catch(InvalidOperationException)
+            {
+                return BadRequest("Id doesn't exist!");
+            }
         }
     }
 }

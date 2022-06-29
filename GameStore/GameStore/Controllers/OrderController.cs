@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace GameStore.Controllers
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("api/orders")]
     public class OrderController : WebApiController
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -57,7 +57,7 @@ namespace GameStore.Controllers
                 Username = request.Username,
                 PasswordHash = hashedPassword,
                 Email = request.Email,
-                Role = role
+                Role = role,
             };
 
             try

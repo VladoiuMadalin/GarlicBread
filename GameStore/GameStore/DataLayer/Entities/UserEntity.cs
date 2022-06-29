@@ -23,5 +23,6 @@ namespace GameStore.DataLayer.Entities
 
         public ICollection<OrderEntity> Orders { get; set; }
 
+        public CreditCardEntity CreditCard { get; set; }
     }
 }

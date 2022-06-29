@@ -17,7 +17,11 @@ namespace GameStore.DataLayer.Repositories
         public IShoppingCartRepository ShoppingCarts { get; set; }
         public IProductRepository Products{ get; set; }
 
-        public UnitOfWork(GameStoreContext context, IUserRepository users)
+        public UnitOfWork(GameStoreContext context,
+            IUserRepository users ,
+            IProductRepository products,
+            IOrderRepository orders ,
+            IShoppingCartRepository  shoppingCarts)
         {
             _dbContext = context;
 
@@ -25,6 +29,9 @@ namespace GameStore.DataLayer.Repositories
             //context.Database.EnsureCreated();
 
             Users = users;
+            Products = products;
+            Orders = orders;
+            ShoppingCarts = shoppingCarts;
         }
 
         public async Task<bool> SaveChangesAsync()

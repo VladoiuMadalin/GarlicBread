@@ -29,7 +29,7 @@ namespace GameStore.DataLayer.Repositories
 
         public void DeleteById (Guid id)
         {
-            var record = GetRecords().FirstOrDefault(e => e.Id == id);
+            var record = GetRecords().Single(e => e.Id == id);
             Delete(record);
         }
 

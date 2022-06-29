@@ -22,7 +22,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 using System.Text;
-
+using GameStore.DataLayer.Repositories.Interfaces;
+using GameStore.DataLayer.Repositories.Classes;
 
 namespace GameStore
 {
@@ -63,7 +64,7 @@ namespace GameStore
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
                 };
             });
-            
+
             services.AddAuthorization();
 
             services.AddSwaggerGen(c =>
@@ -97,11 +98,14 @@ namespace GameStore
         {
             services
                 .AddDbContext<GameStoreContext>(options => options
-                    .UseSqlServer(Configuration.GetConnectionString("VladConnection")));
+                    .UseSqlServer(Configuration.GetConnectionString("MadalinConnection")));
 
             // Repositories
-           // services.AddScoped<UserRepository>(new UserRepository());
+            // services.AddScoped<UserRepository>(new UserRepository());
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             //Services
