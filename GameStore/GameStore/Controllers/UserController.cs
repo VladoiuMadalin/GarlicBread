@@ -31,6 +31,7 @@ namespace GameStore.Controllers
 
 
         [HttpPost]
+        //[Authorize(Roles = "User")]
         [Route("register")]
         public async Task<ActionResult<bool>> Register([FromBody] RegisterRequest request)
         {
@@ -78,6 +79,7 @@ namespace GameStore.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles = "User")]
         [Route("login")]
         public ActionResult<ResponseLogin> Login([FromBody] LoginRequest request)
         {
@@ -97,7 +99,7 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("all")]
-        // [Authorize]
+        //[Authorize(Roles = "User")]
         public ActionResult<List<LightUserRequest>> GetAll()
         {
             var users = _unitOfWork.Users.GetAll(includeDeleted: false).Select(u => new LightUserRequest

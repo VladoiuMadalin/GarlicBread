@@ -32,7 +32,8 @@ namespace GameStore.Controllers
 
         [HttpPost]
         [Route("create")]
-        [Authorize]
+        //[Authorize(Roles = "User")]
+
         //public async Task<ActionResult<bool>> Register([FromBody] OrderRequest request)
         public async Task<ActionResult<bool>> CreateCredit([FromBody][Required] CreditCardRequest request)
         {
@@ -65,8 +66,8 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult<List<CreditCardRequest>> GetAllCreditCards()
+        //[Authorize(Roles = "User")]
+        public ActionResult<List<CreditCardDto>> GetAllCreditCards()
         {
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
             if (user == null) return BadRequest();
@@ -85,7 +86,7 @@ namespace GameStore.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]    
+        //[Authorize(Roles = "User")]
         [Route("deleteAll")]
         public async Task<ActionResult<List<CreditCardEntity>>> DeleteAllCreditCards()
         {

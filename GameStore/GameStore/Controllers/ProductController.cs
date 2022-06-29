@@ -63,7 +63,7 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        //[Authorize(Roles = "User")]
         public ActionResult<List<ProductRequest>> GetAllProducts()
         {
             var products = _unitOfWork.Products.GetAll(includeDeleted: false).Select(p => new ProductRequest

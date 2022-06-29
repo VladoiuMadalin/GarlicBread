@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,31 +16,56 @@ using System.Threading.Tasks;
 namespace GameStore.Controllers
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("api/shoppingCart")]
     public class ShoppingCartController : WebApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICustomerAuthService _authorization;
+        
 
-        public ShoppingCartController(IUnitOfWork unitOfWork, ICustomerAuthService authorization)
+        public ShoppingCartController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _authorization = authorization;
+   
         }
 
 
         [HttpPost]
-        [Route("createOrder")]
+        //[Authorize(Roles = "User")]
+        [Route("create")]
         //public async Task<ActionResult<bool>> Register([FromBody] OrderRequest request)
-        public async Task<ActionResult<bool>> CreateShoppingCart(UserEntity user)
+        public async Task<ActionResult<bool>> CreateShoppingCart([FromBody][Required] ShoppingCartRequest request)
         {
+            if (request == null) return BadRequest("Empty Shopping Cart");
+
+            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
+            if (user == null) return BadRequest();
+
+            
+            var products = new List<ProductEntity>();
+
+            decimal sumTotal = 0;
+            foreach (var productDto in request.Products)
+            {
+                try
+                {
+                    products.Add(_unitOfWork.Products.GetProductByTitle(productDto.Title));
+                    sumTotal += _unitOfWork.Products.GetProductByTitle(productDto.Title).Price;
+
+                }
+                catch (InvalidOperationException)
+                {
+                    return BadRequest("some products don't exist");
+                }
+            }
+
 
             var shoppingCart = new ShoppingCartEntity()
             {
                 User = user,
-                TotalPrice = 0
-
+                TotalPrice = sumTotal,
+                Products=products
             };
+            
 
             try
             {
@@ -54,24 +80,30 @@ namespace GameStore.Controllers
         }
 
         [HttpGet]
-        [Route("allShoppingCarts")]
-        //[Authorize]
-        public ActionResult<List<OrderRequest>> GetAllShoppingCarts(UserEntity user)
+        [Route("all")]
+        //[Authorize(Roles = "User")]
+        public ActionResult<List<ShoppingCartDto>> GetAllShoppingCarts()
         {
-            var orders = _unitOfWork.Orders.GetAll(includeDeleted: false).Select(o => new OrderRequest  //basically la fel
+            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
+            if (user == null) return BadRequest();
+
+            var shoppingCart = _unitOfWork.Orders.GetAll(includeDeleted: false).Select(s => new ShoppingCartDto  
             {
-                Products = o.Products,
-                TotalPrice = o.TotalPrice,
-                User=o.User
-            }).Where(o => o.User == user); //???? 
-            return Ok(orders);
+                Products = s.Products,
+                TotalPrice = s.TotalPrice,
+                User = s.User
+            });//???? 
+            return Ok(shoppingCart);
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "Admin")]
-        [Route("deleteAllShoppingCarts")]
-        public async Task<ActionResult<List<ShoppingCartEntity>>> DeleteAllShoppingCarts(UserEntity user)
+        //[Authorize(Roles = "User")]
+        [Route("delete")]
+        public async Task<ActionResult<List<ShoppingCartEntity>>> DeleteAllShoppingCarts()
         {
+            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
+            if (user == null) return BadRequest();
+
             var shoppingCarts = _unitOfWork.ShoppingCarts.GetAll().Where(s => s.User == user).ToList(); //?????
 
             foreach (var shoppingCart in shoppingCarts)
