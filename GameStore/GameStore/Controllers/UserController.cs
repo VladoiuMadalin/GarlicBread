@@ -1,8 +1,10 @@
 ﻿using GameStore.DataLayer.Entities;
 using GameStore.DataLayer.Repositories;
 using GameStore.Dtos;
+using GameStore.Enums;
 using GameStore.Exceptions;
 using GameStore.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -39,11 +41,23 @@ namespace GameStore.Controllers
 
             var hashedPassword = _authorization.HashPassword(request.Password);
 
+            Role role;
+            try
+            {
+                role = Enum.Parse<Role>(request.Role);
+            }
+            catch
+            {
+                return BadRequest("Invalid role!");
+            }
+           
+
             var user = new UserEntity()
             {
                 Username = request.Username,
                 PasswordHash = hashedPassword,
                 Email = request.Email,
+                Role = role
             };
 
             try
@@ -71,7 +85,7 @@ namespace GameStore.Controllers
             if (user == null) return BadRequest("User not found!");
 
             var samePassword = _authorization.VerifyHashedPassword(user.PasswordHash, request.Password);
-            if (!samePassword) return BadRequest("Invalid password!");
+            if (!samePassword) return BadRequest("Invalid password!"); 
 
             var user_jsonWebToken = _authorization.GetToken(user);
 
@@ -83,7 +97,7 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("all")]
-        //[Authorize]
+        [Authorize]
         public ActionResult<List<LightUserRequest>> GetAll()
         {
             var users = _unitOfWork.Users.GetAll(includeDeleted: false).Select(u => new LightUserRequest
@@ -96,7 +110,7 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("my-account")]
-        // [Authorize(Roles = "User")]
+        [Authorize(Roles = "User")]
         public ActionResult<bool> MyAccount()
         {
             var userId = GetUserId();
@@ -109,14 +123,14 @@ namespace GameStore.Controllers
             {
                 Username = user.Username,
                 Email = user.Email,
-
+                
             });
 
 
 
         }
         [HttpDelete]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [Route("delete/all")]
         public async Task<ActionResult<List<UserEntity>>> DeleteAll()
         {
