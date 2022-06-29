@@ -106,6 +106,7 @@ namespace GameStore
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+            services.AddScoped<ICreditCardRepository, CreditCardRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             //Services
