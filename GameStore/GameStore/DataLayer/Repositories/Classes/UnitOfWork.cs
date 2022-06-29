@@ -26,7 +26,7 @@ namespace GameStore.DataLayer.Repositories
             _dbContext = context;
 
            // context.Database.EnsureDeleted();
-            //context.Database.EnsureCreated();
+           // context.Database.EnsureCreated();
 
             Users = users;
             Products = products;

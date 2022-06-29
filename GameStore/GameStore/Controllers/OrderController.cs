@@ -3,11 +3,13 @@ using GameStore.DataLayer.Repositories;
 using GameStore.Dtos;
 using GameStore.Exceptions;
 using GameStore.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,52 +31,61 @@ namespace GameStore.Controllers
 
 
         [HttpPost]
-        [Route("createOrder")]
-        //public async Task<ActionResult<bool>> Register([FromBody] OrderRequest request)
-        public async Task<ActionResult<bool>> CreateOrder(UserEntity user)
+        [Route("add")]
+        //[Authorize("User")]
+        public async Task<ActionResult> AddOrder([FromBody][Required] OrderDto orderDto)
         {
-           
+            if (orderDto == null) return BadRequest("Empty notification");
 
-            var order = new OrderEntity()
-            {
-                User = user,
-                TotalPrice =0
-                
-            };
+            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
+            if (user == null) return BadRequest();
 
-            try
+            var order = new OrderEntity() { User = user };
+            var products = new List<ProductEntity>();
+
+            foreach (var productDto in orderDto.Products)
             {
-                _unitOfWork.Orders.Insert(order);
-                var saveResult = await _unitOfWork.SaveChangesAsync();
-                return Ok(saveResult);
+                try
+                {
+                    products.Add(_unitOfWork.Products.GetProductByTitle(productDto.Title));
+                }
+                catch(InvalidOperationException)
+                {
+                    return BadRequest("some products don't exist");
+                }
             }
-            catch (OrderForUserExistsException)
-            {
-                return BadRequest("Order for this user exists!");
-            }
+            order.Products = products;
+
+            _unitOfWork.Orders.Insert(order);
+            await _unitOfWork.SaveChangesAsync();
+
+            return Ok();
         }
 
+
+        
+
         [HttpGet]
-        [Route("allOrders")]
-        //[Authorize]
+        [Route("all")]
+        [Authorize]
         public ActionResult<List<OrderRequest>> GetAllOrders(UserEntity user)
         {
-            var orders= _unitOfWork.Orders.GetAll(includeDeleted: false).Select(o => new OrderRequest
+            var orders = _unitOfWork.Orders.GetAll(includeDeleted: false).Select(o => new OrderRequest
             {
-                Products= o.Products,
+                Products = o.Products,
                 TotalPrice = o.TotalPrice,
                 User = o.User
 
-            }).Where(o=>o.User==user); //???? 
+            }).Where(o => o.User == user); //???? 
             return Ok(orders);
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "Admin")]
-        [Route("deleteAllOrders")]
+        [Authorize(Roles = "Admin")]
+        [Route("deleteAll")]
         public async Task<ActionResult<List<ProductEntity>>> DeleteAllOrders(UserEntity user)
         {
-            var orders = _unitOfWork.Orders.GetAll().Where(o=>o.User==user).ToList(); //?????
+            var orders = _unitOfWork.Orders.GetAll().Where(o => o.User == user).ToList(); //?????
 
             foreach (var order in orders)
             {

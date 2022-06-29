@@ -17,7 +17,7 @@ namespace GameStore.DataLayer.Repositories.Classes
 
         public ProductEntity GetProductByTitle(string title)
         {
-            ProductEntity result = GetRecords().FirstOrDefault(product => product.Title == title);
+            ProductEntity result = GetRecords().Single(product => product.Title == title);
             return result;
         }
 

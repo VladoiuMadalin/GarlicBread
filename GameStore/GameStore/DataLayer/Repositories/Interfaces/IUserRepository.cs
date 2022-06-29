@@ -9,5 +9,6 @@ namespace GameStore.DataLayer.Repositories
     public interface IUserRepository : IRepositoryBase<UserEntity>
     {
         UserEntity GetUserByUsername(string username);
+        UserEntity GetAccount(Guid id);
     }
 }

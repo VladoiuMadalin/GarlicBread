@@ -14,6 +14,14 @@ namespace GameStore.DataLayer.Repositories
         {
         }
 
+        public UserEntity GetAccount(Guid id)
+        {
+            var result = GetRecords().Include(user => user.Orders).ThenInclude(order => order.Products)
+                .Single(user => user.Id == id);
+
+            return result;
+        }
+
         public UserEntity GetUserByUsername(string username)
         {
             var result = GetRecords().FirstOrDefault(user => user.Username == username);

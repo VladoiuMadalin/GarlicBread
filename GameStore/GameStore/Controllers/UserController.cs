@@ -50,7 +50,7 @@ namespace GameStore.Controllers
             {
                 return BadRequest("Invalid role!");
             }
-           
+
 
             var user = new UserEntity()
             {
@@ -85,7 +85,7 @@ namespace GameStore.Controllers
             if (user == null) return BadRequest("User not found!");
 
             var samePassword = _authorization.VerifyHashedPassword(user.PasswordHash, request.Password);
-            if (!samePassword) return BadRequest("Invalid password!"); 
+            if (!samePassword) return BadRequest("Invalid password!");
 
             var user_jsonWebToken = _authorization.GetToken(user);
 
@@ -97,7 +97,7 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        // [Authorize]
         public ActionResult<List<LightUserRequest>> GetAll()
         {
             var users = _unitOfWork.Users.GetAll(includeDeleted: false).Select(u => new LightUserRequest
@@ -116,14 +116,15 @@ namespace GameStore.Controllers
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
 
-            var user = _unitOfWork.Users.GetById((Guid)userId);
+            var user = _unitOfWork.Users.GetAccount((Guid)userId);
 
 
             return Ok(new UserRequest
             {
                 Username = user.Username,
                 Email = user.Email,
-                
+                Orders = user.Orders.Select(o => new OrderDto
+                { Products = o.Products.Select(p => new ProductDto { Title = p.Title, Price = p.Price }).ToList() }).ToList()
             });
 
 

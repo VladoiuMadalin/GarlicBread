@@ -7,6 +7,6 @@ namespace GameStore.Dtos
 {
     public class OrderDto
     {
-        public ICollection<ProductDto> Products { get; set; }
+        public IList<ProductDto> Products { get; set; }
     }
 }

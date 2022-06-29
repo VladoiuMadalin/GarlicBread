@@ -29,12 +29,13 @@ namespace GameStore.DataLayer.Repositories.Classes
             //{
             //    throw new OrderForUserExistsException();
             //}
+            _dbSet.Add(record);
 
-            if (_db.Entry(record).State == EntityState.Detached)
-            {
-                _db.Attach(record);
-                _db.Entry(record).State = EntityState.Added;
-            }
+            //if (_db.Entry(record).State == EntityState.Detached)
+            //{
+            //    _db.Attach(record);
+            //    _db.Entry(record).State = EntityState.Added;
+            //}
 
 
         }

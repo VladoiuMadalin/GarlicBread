@@ -34,7 +34,6 @@ namespace GameStore.Controllers
         public async Task<ActionResult<bool>> CreateShoppingCart(UserEntity user)
         {
 
-
             var shoppingCart = new ShoppingCartEntity()
             {
                 User = user,
