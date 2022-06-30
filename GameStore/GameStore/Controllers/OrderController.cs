@@ -69,6 +69,7 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("all")]
+        [Authorize]
         //[Authorize(Roles = "User")]
         public ActionResult<List<OrderRequest>> GetAllOrders()
         {
@@ -84,6 +85,25 @@ namespace GameStore.Controllers
             });
             return Ok(orders);
         }
+
+
+        [HttpGet]
+        [Route("allAdmin")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<List<OrderRequest>> GetAllOrdersAdmin()
+        {
+
+            var orders = _unitOfWork.Orders.GetAll(includeDeleted: false).Select(o => new OrderRequest
+            {
+                Products = o.Products,
+                TotalPrice = o.TotalPrice,
+                User = o.User
+
+            });
+            return Ok(orders);
+        }
+
+
 
         [HttpDelete]
         //[Authorize(Roles = "User")]

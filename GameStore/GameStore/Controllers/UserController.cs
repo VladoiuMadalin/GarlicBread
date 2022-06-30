@@ -148,6 +148,28 @@ namespace GameStore.Controllers
         }
 
 
+        [HttpDelete]
+        //[Authorize(Roles = "User")]
+        [Route("delete/this")]
+        public async Task<ActionResult<List<UserEntity>>> DeleteUser()
+        {
+            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
+            if (user == null) return BadRequest();
+
+            var users = _unitOfWork.Users.GetAll().Where(u => u.Id == user.Id).ToList(); //?????
+
+            foreach (var x in users)
+            {
+                _unitOfWork.Users.Delete(x);
+            }
+            await _unitOfWork.SaveChangesAsync();
+            return Ok(users);
+        }
+
+
+
+
+
 
 
 

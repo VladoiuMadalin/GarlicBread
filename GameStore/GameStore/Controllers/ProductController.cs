@@ -63,6 +63,7 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("all")]
+        [Authorize]
         //[Authorize(Roles = "User")]
         public ActionResult<List<ProductRequest>> GetAllProducts()
         {

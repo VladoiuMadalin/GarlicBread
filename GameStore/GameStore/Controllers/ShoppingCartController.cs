@@ -3,6 +3,7 @@ using GameStore.DataLayer.Repositories;
 using GameStore.Dtos;
 using GameStore.Exceptions;
 using GameStore.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
