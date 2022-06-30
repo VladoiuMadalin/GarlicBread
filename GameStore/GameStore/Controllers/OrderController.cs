@@ -34,7 +34,7 @@ namespace GameStore.Controllers
         [Authorize(Roles = "User")]
         public async Task<ActionResult> AddOrder([FromBody][Required] LightOrderDto orderDto)
         {
-            if (orderDto == null) return BadRequest("Empty order");
+            if (orderDto == null || orderDto.Products == null) return BadRequest("Empty order");
 
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
             if (user == null) return BadRequest();

@@ -65,21 +65,6 @@ namespace GameStore.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Route("all")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult<List<ShoppingCartDto>> GetAllShoppingCarts()
-        {
-            var orders = _unitOfWork.ShoppingCarts.GetAll(includeDeleted: false).Select(o => new ShoppingCartDto
-            {
-                Products = o.Products.Select(p => new ProductDto { Price = p.Price, Title = p.Title }).ToList(),
-                TotalPrice = o.TotalPrice,
-                User = new LightUserDto { Email = o.User.Email, Username = o.User.Email },
-
-
-            });
-            return Ok(orders);
-        }
 
         [HttpDelete]
         [Authorize(Roles = "Admin")]
