@@ -8,8 +8,8 @@ namespace GameStore.Dtos
 {
     public class ShoppingCartDto
     {
-        public ICollection<ProductEntity> Products { get; set; }
-        public UserEntity User { get; set; }
+        public IList<ProductDto> Products { get; set; }
         public decimal TotalPrice { get; set; }
+        public LightUserDto User { get; set; }
     }
 }

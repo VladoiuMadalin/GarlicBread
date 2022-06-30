@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GameStore.DataLayer.Repositories.Interfaces
+namespace GameStore.DataLayer.Repositories
 {
-    public interface ICreditCardRepository : IRepositoryBase<CreditCardEntity>
+    public interface ICreditCardRepository : IBaseRepository<CreditCard>
     {
-        CreditCardEntity GetCreditCardbyUser(UserEntity user);
+        CreditCard GetCreditCardbyUser(User user);
     }
 }

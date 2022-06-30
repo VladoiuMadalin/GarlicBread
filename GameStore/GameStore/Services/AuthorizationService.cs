@@ -27,7 +27,7 @@ namespace GameStore.Services
                 _securityKey = config.GetValue<string>("JWT:Key");
             }
 
-            public string GetToken(UserEntity user)
+            public string GetToken(User user)
             {
                 var jwtTokenHandler = new JwtSecurityTokenHandler();
 

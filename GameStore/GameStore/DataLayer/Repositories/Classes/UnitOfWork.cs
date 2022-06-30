@@ -1,5 +1,5 @@
 ﻿using GameStore.DataLayer.Entities;
-using GameStore.DataLayer.Repositories.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -27,8 +27,8 @@ namespace GameStore.DataLayer.Repositories
         {
             _dbContext = context;
 
-           // context.Database.EnsureDeleted();
-           // context.Database.EnsureCreated();
+          // context.Database.EnsureDeleted();
+            //context.Database.EnsureCreated();
 
             Users = users;
             Products = products;

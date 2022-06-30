@@ -5,38 +5,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Exceptions;
-using GameStore.DataLayer.Repositories.Interfaces;
 
-namespace GameStore.DataLayer.Repositories.Classes
+namespace GameStore.DataLayer.Repositories
 {
-    public class ShoppingCartRepository : RepositoryBase<ShoppingCartEntity>, IShoppingCartRepository
+    public class ShoppingCartRepository : BaseRepository<ShoppingCart>, IShoppingCartRepository
     {
         public ShoppingCartRepository(GameStoreContext context) : base(context)
         {
         }
 
-        public ShoppingCartEntity GetShoppingCartByUser(UserEntity user)
+        public ShoppingCart GetShoppingCartByUser(User user)
         {
-            ShoppingCartEntity result = GetRecords().FirstOrDefault(shoppingCart=>shoppingCart.User==user);
+            ShoppingCart result = GetRecords().FirstOrDefault(shoppingCart=>shoppingCart.User==user);
             return result;
         }
 
-        public override void Insert(ShoppingCartEntity record)
+        public override void Insert(ShoppingCart record)
         {
-            var userShoppingCartExists = _dbSet.Any(x => x.User == record.User);
-
-            if (userShoppingCartExists)
-            {
-                throw new ShoppingCartForUserExistsException();
-            }
-
-            if (_db.Entry(record).State == EntityState.Detached)
-            {
-                _db.Attach(record);
-                _db.Entry(record).State = EntityState.Added;
-            }
-
-
+            _dbSet.Add(record);
         }
 
     }

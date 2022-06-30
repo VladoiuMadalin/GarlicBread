@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace GameStore.DataLayer.Repositories
 {
-    public class RepositoryBase<T> : IRepositoryBase<T>, IDisposable where T : BaseEntity, new()
+    public class BaseRepository<T> : IBaseRepository<T>, IDisposable where T : BaseEntity, new()
     {
         protected readonly DbContext _db;
         protected readonly DbSet<T> _dbSet;
 
-        protected RepositoryBase(GameStoreContext context)
+        protected BaseRepository(GameStoreContext context)
         {
             _db = context;
             _dbSet = context.Set<T>();
         }
 
-        public void Delete(T record)
+        public virtual void Delete(T record)
         {
             if (record != null)
             {
@@ -27,7 +27,7 @@ namespace GameStore.DataLayer.Repositories
             }
         }
 
-        public void DeleteById (Guid id)
+        public virtual void DeleteById (Guid id)
         {
             var record = GetRecords().Single(e => e.Id == id);
             Delete(record);
@@ -69,6 +69,7 @@ namespace GameStore.DataLayer.Repositories
                 _db.Attach(record);
 
             _db.Entry(record).State = EntityState.Modified;
+            //_db.Update(record);
         }
 
         protected IQueryable<T> GetRecords(bool asNoTracking = false, bool includeDeleted = false)

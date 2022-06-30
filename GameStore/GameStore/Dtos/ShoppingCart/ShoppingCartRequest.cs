@@ -8,7 +8,7 @@ namespace GameStore.Dtos
 {
     public class ShoppingCartRequest
     {
-        public ICollection<ProductEntity> Products { get; set; }
+        public ICollection<Product> Products { get; set; }
         public decimal TotalPrice { get; set; }
     }
 }

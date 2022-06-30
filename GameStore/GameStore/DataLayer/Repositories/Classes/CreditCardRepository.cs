@@ -5,29 +5,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Exceptions;
-using GameStore.DataLayer.Repositories.Interfaces;
 
-namespace GameStore.DataLayer.Repositories.Classes
+
+namespace GameStore.DataLayer.Repositories
 {
-    public class CreditCardRepository : RepositoryBase<CreditCardEntity>,ICreditCardRepository
+    public class CreditCardRepository : BaseRepository<CreditCard>,ICreditCardRepository
     {
         public CreditCardRepository(GameStoreContext context) : base(context)
         {
         }
 
-        public CreditCardEntity GetCreditCardbyUser(UserEntity user)
+        public CreditCard GetCreditCardbyUser(User user)
         {
-            CreditCardEntity result = GetRecords().FirstOrDefault(creditCard => creditCard.User == user);
+            CreditCard result = GetRecords().FirstOrDefault(creditCard => creditCard.User == user);
             return result;
         }
 
-        public override void Insert(CreditCardEntity record)
+        public override void Insert(CreditCard record)
         {
             var CreditCardUserExists = _dbSet.Any(x => x.User == record.User);
 
             if (CreditCardUserExists)
             {
-                throw new CreditCardUserExistsException();
+                base.Update(record);
             }
 
             if (_db.Entry(record).State == EntityState.Detached)

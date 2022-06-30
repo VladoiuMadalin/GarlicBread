@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GameStore.DataLayer.Repositories.Interfaces
+namespace GameStore.DataLayer.Repositories
 {
-    public interface IOrderRepository : IRepositoryBase<OrderEntity>
+    public interface IOrderRepository : IBaseRepository<Order>
     {
-        OrderEntity GetOrderByUser(UserEntity user);
+        Order GetOrderByUser(User user);
     }
 }

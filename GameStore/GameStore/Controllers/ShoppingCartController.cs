@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace GameStore.Controllers
 {
     [ApiController]
-    [Route("api/shoppingCart")]
+    [Route("api/shopping-cart")]
     public class ShoppingCartController : WebApiController
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -31,88 +31,72 @@ namespace GameStore.Controllers
 
 
         [HttpPost]
-        //[Authorize(Roles = "User")]
-        [Route("create")]
-        //public async Task<ActionResult<bool>> Register([FromBody] OrderRequest request)
-        public async Task<ActionResult<bool>> CreateShoppingCart([FromBody][Required] ShoppingCartRequest request)
+        [Route("add")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult> AddOrder([FromBody][Required] LightShoppingCartDto shoppingCartDto)
         {
-            if (request == null) return BadRequest("Empty Shopping Cart");
+            if (shoppingCartDto == null) return BadRequest("Empty order");
 
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
             if (user == null) return BadRequest();
 
-            
-            var products = new List<ProductEntity>();
+            var shoppingCart = new ShoppingCart() { User = user };
+            var products = new List<Product>();
 
             decimal sumTotal = 0;
-            foreach (var productDto in request.Products)
+            foreach (var productDto in shoppingCartDto.Products)
             {
                 try
                 {
                     products.Add(_unitOfWork.Products.GetProductByTitle(productDto.Title));
                     sumTotal += _unitOfWork.Products.GetProductByTitle(productDto.Title).Price;
-
                 }
                 catch (InvalidOperationException)
                 {
                     return BadRequest("some products don't exist");
                 }
             }
+            shoppingCart.Products = products;
+            shoppingCart.TotalPrice = sumTotal;
 
+            _unitOfWork.ShoppingCarts.Insert(shoppingCart);
+            await _unitOfWork.SaveChangesAsync();
 
-            var shoppingCart = new ShoppingCartEntity()
-            {
-                User = user,
-                TotalPrice = sumTotal,
-                Products=products
-            };
-            
-
-            try
-            {
-                _unitOfWork.ShoppingCarts.Insert(shoppingCart);
-                var saveResult = await _unitOfWork.SaveChangesAsync();
-                return Ok(saveResult);
-            }
-            catch (ShoppingCartForUserExistsException)
-            {
-                return BadRequest("Shopping Cart for this user exists!");
-            }
+            return Ok();
         }
 
         [HttpGet]
         [Route("all")]
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "Admin")]
         public ActionResult<List<ShoppingCartDto>> GetAllShoppingCarts()
         {
-            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
-            if (user == null) return BadRequest();
-
-            var shoppingCart = _unitOfWork.Orders.GetAll(includeDeleted: false).Select(s => new ShoppingCartDto  
+            var orders = _unitOfWork.ShoppingCarts.GetAll(includeDeleted: false).Select(o => new ShoppingCartDto
             {
-                Products = s.Products,
-                TotalPrice = s.TotalPrice,
-                User = s.User
-            });//???? 
-            return Ok(shoppingCart);
+                Products = o.Products.Select(p => new ProductDto { Price = p.Price, Title = p.Title }).ToList(),
+                TotalPrice = o.TotalPrice,
+                User = new LightUserDto { Email = o.User.Email, Username = o.User.Email },
+
+
+            });
+            return Ok(orders);
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "User")]
-        [Route("delete")]
-        public async Task<ActionResult<List<ShoppingCartEntity>>> DeleteAllShoppingCarts()
+        [Authorize(Roles = "Admin")]
+        [Route("delete-all")]
+        public async Task<ActionResult<List<Order>>> DeleteAllShoppingCarts()
         {
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
             if (user == null) return BadRequest();
 
-            var shoppingCarts = _unitOfWork.ShoppingCarts.GetAll().Where(s => s.User == user).ToList(); //?????
+            var orders = _unitOfWork.ShoppingCarts.GetAll().Where(o => o.User == user)/*.ToList()*/; //?????
 
-            foreach (var shoppingCart in shoppingCarts)
+            foreach (var shoppingCart in orders)
             {
                 _unitOfWork.ShoppingCarts.Delete(shoppingCart);
             }
             await _unitOfWork.SaveChangesAsync();
-            return Ok(shoppingCarts);
+            return Ok(orders);
         }
 
 

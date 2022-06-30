@@ -25,22 +25,22 @@ namespace GameStore.Controllers
         public OrderController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-           
+
         }
 
 
         [HttpPost]
         [Route("add")]
-        //[Authorize(Roles = "User")]
-        public async Task<ActionResult> AddOrder([FromBody][Required] OrderDto orderDto)
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult> AddOrder([FromBody][Required] LightOrderDto orderDto)
         {
             if (orderDto == null) return BadRequest("Empty order");
 
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
             if (user == null) return BadRequest();
 
-            var order = new OrderEntity() { User = user };
-            var products = new List<ProductEntity>();
+            var order = new Order() { User = user };
+            var products = new List<Product>();
 
             decimal sumTotal = 0;
             foreach (var productDto in orderDto.Products)
@@ -50,7 +50,7 @@ namespace GameStore.Controllers
                     products.Add(_unitOfWork.Products.GetProductByTitle(productDto.Title));
                     sumTotal += _unitOfWork.Products.GetProductByTitle(productDto.Title).Price;
                 }
-                catch(InvalidOperationException)
+                catch (InvalidOperationException)
                 {
                     return BadRequest("some products don't exist");
                 }
@@ -65,55 +65,18 @@ namespace GameStore.Controllers
         }
 
 
-        
-
-        [HttpGet]
-        [Route("all")]
-        [Authorize]
-        //[Authorize(Roles = "User")]
-        public ActionResult<List<OrderRequest>> GetAllOrders()
-        {
-            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
-            if (user == null) return BadRequest();
-
-            var orders = _unitOfWork.Orders.GetAll(includeDeleted: false).Select(o => new OrderRequest
-            {
-                Products = o.Products,
-                TotalPrice = o.TotalPrice,
-                User = o.User
-
-            });
-            return Ok(orders);
-        }
-
-
-        [HttpGet]
-        [Route("allAdmin")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult<List<OrderRequest>> GetAllOrdersAdmin()
-        {
-
-            var orders = _unitOfWork.Orders.GetAll(includeDeleted: false).Select(o => new OrderRequest
-            {
-                Products = o.Products,
-                TotalPrice = o.TotalPrice,
-                User = o.User
-
-            });
-            return Ok(orders);
-        }
 
 
 
         [HttpDelete]
-        //[Authorize(Roles = "User")]
-        [Route("delete")]
-        public async Task<ActionResult<List<OrderEntity>>> DeleteAllOrders()
+        [Authorize(Roles = "Admin")]
+        [Route("delete-all")]
+        public async Task<ActionResult<List<Order>>> DeleteAllOrders()
         {
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
             if (user == null) return BadRequest();
 
-            var orders = _unitOfWork.Orders.GetAll().Where(o => o.User == user).ToList(); //?????
+            var orders = _unitOfWork.Orders.GetAll().Where(o => o.User == user);
 
             foreach (var order in orders)
             {

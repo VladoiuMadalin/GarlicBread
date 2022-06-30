@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class LightUserRequest
+    public class LightUserDto
     {
         public string Username { get; set; }
         public string Email { get; set; }

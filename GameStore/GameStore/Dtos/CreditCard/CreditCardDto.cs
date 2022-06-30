@@ -1,15 +1,14 @@
 ﻿using GameStore.DataLayer.Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class OrderRequest
+    public class CreditCardDto : LightCreditCardDto
     {
-        public UserEntity User;
-        public ICollection<ProductEntity> Products { get; set; }
-        public decimal TotalPrice { get; set; }
+        public LightUserDto User { get; set; }
     }
 }

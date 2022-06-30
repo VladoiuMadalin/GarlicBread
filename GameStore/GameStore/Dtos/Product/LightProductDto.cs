@@ -6,15 +6,10 @@ using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class ProductRequest:LightProductRequest
+    public class LightProductDto
     {
-        
-
-
-        [Required(ErrorMessage = "Price required!")]
-        public decimal Price { get; set; }
-
-
-       
+        [Required(ErrorMessage = "Title required!")]
+        [MaxLength(100, ErrorMessage = "Title too long!")]
+        public string Title { get; set; }
     }
 }

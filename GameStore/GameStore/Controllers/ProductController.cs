@@ -31,19 +31,20 @@ namespace GameStore.Controllers
 
 
         [HttpPost]
-        [Route("insert")]
+        [Route("add")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<bool>> InsertProduct([FromBody] ProductDto request)
+        public async Task<ActionResult<bool>> AddProduct([FromBody] ProductDto request)
         {
             if (request == null)
             {
                 BadRequest(error: "Request must not be empty!");
             }
 
-            var product = new ProductEntity()
+            var product = new Product()
             {
                 Title = request.Title,
                 Price = request.Price,
+                Picture = request.Picture
             };
 
             try
@@ -64,22 +65,23 @@ namespace GameStore.Controllers
         [HttpGet]
         [Route("all")]
         [Authorize]
-        //[Authorize(Roles = "User")]
-        public ActionResult<List<ProductRequest>> GetAllProducts()
+        public ActionResult<List<ProductDto>> GetAllProducts()
         {
-            var products = _unitOfWork.Products.GetAll(includeDeleted: false).Select(p => new ProductRequest
+            var products = _unitOfWork.Products.GetAll(includeDeleted: false).Select(p => new ProductDto
             {
                 Title = p.Title,
-                Price = p.Price
-            }); ;
+                Price = p.Price,
+                Picture = p.Picture,
+                Id = p.Id
+            });
             return Ok(products);
         }
 
 
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        [Route("deleteAll")]
-        public async Task<ActionResult<List<ProductEntity>>> DeleteAllProducts()
+        [Route("delete-all")]
+        public async Task<ActionResult<List<Product>>> DeleteAllProducts()
         {
             var products = _unitOfWork.Products.GetAll().ToList();
 
@@ -94,7 +96,7 @@ namespace GameStore.Controllers
         [HttpDelete]
         [Authorize(Roles = "Admin")]
         [Route("delete")]
-        public async Task<ActionResult<List<ProductEntity>>> DeleteAProduct([FromBody] LightProductRequest request)
+        public async Task<ActionResult<List<Product>>> DeleteAProduct([FromBody] LightProductDto request)
         {
             var products = _unitOfWork.Products.GetAll().ToList();
             string title = request.Title;
@@ -113,7 +115,7 @@ namespace GameStore.Controllers
         [HttpDelete]
         [Authorize(Roles = "Admin")]
         [Route("deleteById")]
-        public async Task<ActionResult<List<ProductEntity>>> DeleteById([FromBody] DeleteRequest request)
+        public async Task<ActionResult<List<Product>>> DeleteById([FromBody] DeleteRequest request)
         {
             try
             {
@@ -121,7 +123,7 @@ namespace GameStore.Controllers
                 await _unitOfWork.SaveChangesAsync();
                 return Ok();
             }
-            catch(InvalidOperationException)
+            catch (InvalidOperationException)
             {
                 return BadRequest("Id doesn't exist!");
             }

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace GameStore.DataLayer.Entities
 {
     
-    public class ShoppingCartEntity : BaseEntity
+    public class Order : BaseEntity
     {
-        public ICollection<ProductEntity> Products { get; set; }
-        public UserEntity User { get; set; }
+        public ICollection<Product> Products { get; set; }
+        public User User { get; set; }
         public decimal TotalPrice { get; set; }
     }
-
-
 }

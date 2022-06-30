@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace GameStore.DataLayer.Repositories
 {
-    public interface IUserRepository : IRepositoryBase<UserEntity>
+    public interface IUserRepository : IBaseRepository<User>
     {
-        UserEntity GetUserByUsername(string username);
-        UserEntity GetAccount(Guid id);
+        User GetUserByUsername(string username);
+        User GetAccount(Guid id);
     }
 }

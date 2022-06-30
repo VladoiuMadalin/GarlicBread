@@ -5,13 +5,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GameStore.DataLayer.Entities
 {
-    public class UserEntity : BaseEntity
+    public class User : BaseEntity
     {
         [MaxLength(30)]
-        // [Index(IsUnique = true)]
         public string Username { get; set; }
 
         [MaxLength(100)]
@@ -21,8 +21,9 @@ namespace GameStore.DataLayer.Entities
 
         public Role Role { get; set; }
 
-        public ICollection<OrderEntity> Orders { get; set; }
+        public ICollection<Order> Orders { get; set; }
+        public ICollection<ShoppingCart> ShoppingCarts { get; set; }
 
-        public CreditCardEntity CreditCard { get; set; }
+        public CreditCard CreditCard { get; set; }
     }
 }

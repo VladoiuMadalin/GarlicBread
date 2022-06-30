@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class UserRequest : LightUserRequest
+    public class ChangePasswordRequest
     {
-        public ICollection<OrderDto> Orders { get; set; }
+        public string OldPassword { get; set; }
+        public string NewPassword { get; set; }
     }
 }

@@ -5,39 +5,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Exceptions;
-using GameStore.DataLayer.Repositories.Interfaces;
 
-namespace GameStore.DataLayer.Repositories.Classes
+
+namespace GameStore.DataLayer.Repositories
 {
-    public class OrderRepository : RepositoryBase<OrderEntity>, IOrderRepository
+    public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         public OrderRepository(GameStoreContext context) : base(context)
         {
         }
 
-        public OrderEntity GetOrderByUser( UserEntity user)
+        public Order GetOrderByUser( User user)
         {
-            OrderEntity result = GetRecords().FirstOrDefault(order =>order.User==user);
+            Order result = GetRecords().FirstOrDefault(order =>order.User==user);
             return result;
         }
 
-        public override void Insert(OrderEntity record)
+        public override void Insert(Order record)
         {
-            //var userOrderExists = _dbSet.Any(x => x.User == record.User);
-
-            //if (userOrderExists)
-            //{
-            //    throw new OrderForUserExistsException();
-            //}
             _dbSet.Add(record);
-
-            //if (_db.Entry(record).State == EntityState.Detached)
-            //{
-            //    _db.Attach(record);
-            //    _db.Entry(record).State = EntityState.Added;
-            //}
-
-
         }
 
     }

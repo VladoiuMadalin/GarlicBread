@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GameStore.DataLayer.Repositories.Interfaces
+namespace GameStore.DataLayer.Repositories
 {
-    public interface IProductRepository: IRepositoryBase<ProductEntity>
+    public interface IProductRepository: IBaseRepository<Product>
     {
-        ProductEntity GetProductByTitle(string title);
+        Product GetProductByTitle(string title);
     }
 }

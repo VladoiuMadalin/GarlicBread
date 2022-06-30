@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class ProductDto
+    public class LightOrderDto
     {
-        public string Title { get; set; }
-        public decimal Price { get; set; }
+        public IList<LightProductDto> Products { get; set; }
     }
 }

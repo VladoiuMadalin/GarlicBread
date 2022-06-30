@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GameStore.DataLayer.Repositories.Interfaces
+namespace GameStore.DataLayer.Repositories
 {
-    public interface IShoppingCartRepository : IRepositoryBase<ShoppingCartEntity>
+    public interface IShoppingCartRepository : IBaseRepository<ShoppingCart>
     {
-        ShoppingCartEntity GetShoppingCartByUser(UserEntity user);
+        ShoppingCart GetShoppingCartByUser(User user);
     }
 }

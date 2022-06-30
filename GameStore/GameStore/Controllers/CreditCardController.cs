@@ -18,55 +18,58 @@ namespace GameStore.Controllers
 {
     [ApiController]
     [Route("api/creditCard")]
-    public class CreditCardController: WebApiController
+    public class CreditCardController : WebApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-       
 
-        public CreditCardController(IUnitOfWork unitOfWork )
+
+        public CreditCardController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            
+
         }
 
 
-        [HttpPost]
+        [HttpPut]
         [Route("create")]
-        //[Authorize(Roles = "User")]
-
-        //public async Task<ActionResult<bool>> Register([FromBody] OrderRequest request)
-        public async Task<ActionResult<bool>> CreateCredit([FromBody][Required] CreditCardRequest request)
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<bool>> CreateCredit([FromBody][Required] LightCreditCardDto request)
         {
             if (request == null) return BadRequest("Empty Credit Card Data");
 
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
             if (user == null) return BadRequest();
 
-            var newCreditCard = new CreditCardEntity()
+            var creditCard = _unitOfWork.CreditCards.GetCreditCardbyUser(user);
+            if (creditCard == null)
             {
-                User= user,
-                CardNumber=request.CardNumber,
-                NameOnCard=request.NameOnCard,
-                ExpirationMonth=request.ExpirationMonth,
-                ExpirationYear=request.ExpirationYear,
-                Cvc=request.Cvc
-            };
+                creditCard = new CreditCard() { User = user };
+            }
+
+            creditCard.CardNumber = request.CardNumber;
+            creditCard.NameOnCard = request.NameOnCard;
+            creditCard.ExpirationMonth = request.ExpirationMonth;
+            creditCard.ExpirationYear = request.ExpirationYear;
+            creditCard.Cvc = request.Cvc;
+
 
             try
             {
-                _unitOfWork.CreditCards.Insert(newCreditCard);
-                var saveResult = await _unitOfWork.SaveChangesAsync();
-                return Ok(saveResult);
+                _unitOfWork.CreditCards.Insert(creditCard);
+
             }
             catch (CreditCardUserExistsException)
             {
-                return BadRequest("Credit card for this user exists!");
+                _unitOfWork.CreditCards.Update(creditCard);
             }
+            var saveResult = await _unitOfWork.SaveChangesAsync();
+            return Ok(saveResult);
+
         }
 
         [HttpGet]
         [Route("all")]
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "User")]
         public ActionResult<List<CreditCardDto>> GetAllCreditCards()
         {
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
@@ -79,21 +82,21 @@ namespace GameStore.Controllers
                 Cvc = c.Cvc,
                 ExpirationMonth = c.ExpirationMonth,
                 ExpirationYear = c.ExpirationYear,
-                User = user
+                User = new LightUserDto { Email = user.Email, Username = user.Username }
 
             });
             return Ok(creditCards);
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "Admin")]
         [Route("deleteAll")]
-        public async Task<ActionResult<List<CreditCardEntity>>> DeleteAllCreditCards()
+        public async Task<ActionResult<List<CreditCard>>> DeleteAllCreditCards()
         {
 
             var user = _unitOfWork.Users.GetById((Guid)GetUserId());
             if (user == null) return BadRequest();
-            var creditCards = _unitOfWork.CreditCards.GetAll().Where(c => c.User == user).ToList(); //?????
+            var creditCards = _unitOfWork.CreditCards.GetAll().Where(c => c.User == user);
 
             foreach (var credit in creditCards)
             {

@@ -31,7 +31,6 @@ namespace GameStore.Controllers
 
 
         [HttpPost]
-        //[Authorize(Roles = "User")]
         [Route("register")]
         public async Task<ActionResult<bool>> Register([FromBody] RegisterRequest request)
         {
@@ -53,7 +52,7 @@ namespace GameStore.Controllers
             }
 
 
-            var user = new UserEntity()
+            var user = new User()
             {
                 Username = request.Username,
                 PasswordHash = hashedPassword,
@@ -79,7 +78,6 @@ namespace GameStore.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "User")]
         [Route("login")]
         public ActionResult<ResponseLogin> Login([FromBody] LoginRequest request)
         {
@@ -97,12 +95,33 @@ namespace GameStore.Controllers
             });
         }
 
+        [HttpPut]
+        [Route("change-password")]
+        [Authorize]
+        public async Task<ActionResult<bool>> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
+
+            if (user == null) return BadRequest("User not found!");
+
+            //var oldPasswordHashed = _authorization.HashPassword(request.OldPassword);
+            var samePassword = _authorization.VerifyHashedPassword(user.PasswordHash, request.OldPassword);
+
+            if (!samePassword) return BadRequest("Invalid password!");
+
+            var newPasswordHashed = _authorization.HashPassword(request.NewPassword);
+            user.PasswordHash = newPasswordHashed;
+
+            await _unitOfWork.SaveChangesAsync();
+            return Ok();
+        }
+
         [HttpGet]
         [Route("all")]
         //[Authorize(Roles = "User")]
-        public ActionResult<List<LightUserRequest>> GetAll()
+        public ActionResult<List<LightUserDto>> GetAll()
         {
-            var users = _unitOfWork.Users.GetAll(includeDeleted: false).Select(u => new LightUserRequest
+            var users = _unitOfWork.Users.GetAll(includeDeleted: false).Select(u => new LightUserDto
             {
                 Username = u.Username,
                 Email = u.Email
@@ -112,7 +131,7 @@ namespace GameStore.Controllers
 
         [HttpGet]
         [Route("my-account")]
-        [Authorize(Roles = "User")]
+        [Authorize]
         public ActionResult<bool> MyAccount()
         {
             var userId = GetUserId();
@@ -126,7 +145,11 @@ namespace GameStore.Controllers
                 Username = user.Username,
                 Email = user.Email,
                 Orders = user.Orders.Select(o => new OrderDto
-                { Products = o.Products.Select(p => new ProductDto { Title = p.Title, Price = p.Price }).ToList() }).ToList()
+                {
+                    TotalPrice = o.TotalPrice,
+                    Products = o.Products.Select(p => new ProductDto { Title = p.Title, Price = p.Price, Picture = p.Picture, Id = p.Id }).ToList(),
+                    Id = o.Id
+                }).ToList()
             });
 
 
@@ -135,13 +158,22 @@ namespace GameStore.Controllers
         [HttpDelete]
         [Authorize(Roles = "Admin")]
         [Route("delete/all")]
-        public async Task<ActionResult<List<UserEntity>>> DeleteAll()
+        public async Task<ActionResult<List<User>>> DeleteAll()
         {
             var users = _unitOfWork.Users.GetAll().ToList();
 
             foreach (var user in users)
             {
                 _unitOfWork.Users.Delete(user);
+
+                foreach (var order in user.Orders)
+                {
+                    _unitOfWork.Orders.Delete(order);
+                }
+                foreach (var shoppingCart in user.ShoppingCarts)
+                {
+                    _unitOfWork.ShoppingCarts.Delete(shoppingCart);
+                }
             }
             await _unitOfWork.SaveChangesAsync();
             return Ok(users);
@@ -149,21 +181,13 @@ namespace GameStore.Controllers
 
 
         [HttpDelete]
-        //[Authorize(Roles = "User")]
+        [Authorize]
         [Route("delete/this")]
-        public async Task<ActionResult<List<UserEntity>>> DeleteUser()
+        public async Task<ActionResult<User>> DeleteUser()
         {
-            var user = _unitOfWork.Users.GetById((Guid)GetUserId());
-            if (user == null) return BadRequest();
-
-            var users = _unitOfWork.Users.GetAll().Where(u => u.Id == user.Id).ToList(); //?????
-
-            foreach (var x in users)
-            {
-                _unitOfWork.Users.Delete(x);
-            }
+            _unitOfWork.Users.DeleteById((Guid)GetUserId());
             await _unitOfWork.SaveChangesAsync();
-            return Ok(users);
+            return Ok();
         }
 
 
@@ -176,120 +200,4 @@ namespace GameStore.Controllers
 
     }
 }
-
-//[Route("api/[controller]")]
-//[ApiController]
-//public class UserController : WebApiController
-//{
-//    private GameStoreContext _dbContext;
-//    public UserController(GameStoreContext dbContext)
-//    {
-//        _dbContext = dbContext;
-//        _dbContext.Database.EnsureDeleted();
-//        _dbContext.Database.EnsureCreated();
-//    }
-
-//    [HttpGet("GetUsers")]
-//    public IActionResult Get()
-//    {
-
-//        try
-//        {
-//            var users = _dbContext.Users.ToList();
-//            if (users.Count == 0)
-//            {
-//                return StatusCode(404, "No user found");
-//            }
-
-//            return Ok(users);
-//        }
-//        catch (Exception ex)
-//        {
-//            return StatusCode(500, "An error a aparut");
-//        }
-//    }
-
-//    [HttpPost("CreateUser")]
-//    public IActionResult Create([FromBody] UserRequest userRequest)
-//    {
-//        UserEntity user = new UserEntity()
-//        {
-//            Username = userRequest.Username,
-//            Email = userRequest.Email,
-//            PasswordHash = userRequest.Password
-//        };
-
-//        try
-//        {
-//            _dbContext.Users.Add(user);
-//            _dbContext.SaveChanges();
-//        }
-//        catch (Exception ex)
-//        {
-//            return StatusCode(500, "An error a aparut");
-//        }
-
-//        var users = _dbContext.Users.ToList();
-//        return Ok(users);
-//    }
-
-//    [HttpPut("UpdateUser")]
-//    public IActionResult Update([FromBody] UserRequest userRequest)
-//    {
-//        try
-//        {
-//            var user = _dbContext.Users.FirstOrDefault(x => x.Id == userRequest.Id);
-//            if (user == null)
-//            {
-//                return StatusCode(404, "No user found");
-//            }
-//            user.Username = userRequest.Username;
-//            user.Email = userRequest.Email;
-//            user.PasswordHash = userRequest.Password;
-//            _dbContext.Entry(user).State = EntityState.Modified;
-//            _dbContext.SaveChanges();
-
-//        }
-//        catch (Exception ex)
-//        {
-//            return StatusCode(500, "An error a aparut");
-//        }
-//        var users = _dbContext.Users.ToList();
-//        return Ok(users);
-//    }
-
-//    [HttpDelete("DeleteUser/{Id}")]
-//    public IActionResult Delete([FromRoute] int Id)
-//    {
-//        try
-//        {
-//            var user = _dbContext.Users.FirstOrDefault(x => x.Id == Id);
-//            if (user == null)
-//            {
-//                return StatusCode(404, "No user found");
-//            }
-
-//            _dbContext.Entry(user).State = EntityState.Deleted;
-//            _dbContext.SaveChanges();
-
-//        }
-//        catch (Exception ex)
-//        {
-
-//            return StatusCode(500, "An error a aparut");
-//        }
-
-//        var users = _dbContext.Users.ToList();
-//        return Ok(users);
-//    }
-
-//    private List<UserRequest> GetUsers()
-//    {
-//        return new List<UserRequest>()
-//        {
-//            new UserRequest {Id = 1,Username = "madalin" , Password="123"},
-//            new UserRequest {Id = 2,Username = "vladut" , Password="102"},
-//        };
-//    }
-
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class CreditCardRequest
+    public class LightCreditCardDto
     {
         [MaxLength(12)]
         [MinLength(12)]

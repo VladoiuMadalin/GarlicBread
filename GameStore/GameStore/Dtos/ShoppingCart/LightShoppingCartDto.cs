@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace GameStore.Dtos
 {
-    public class OrderDto
+    public class LightShoppingCartDto
     {
-        public IList<ProductDto> Products { get; set; }
+        public IList<LightProductDto> Products { get; set; }
     }
 }

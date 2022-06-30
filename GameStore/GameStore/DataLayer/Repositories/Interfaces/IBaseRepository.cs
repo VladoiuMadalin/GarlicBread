@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GameStore.DataLayer.Repositories
 {
-    public interface IRepositoryBase<T>
+    public interface IBaseRepository<T>
     {
         IList<T> GetAll(bool asNoTracking = false, bool includeDeleted = false);
         T GetById(Guid id, bool asNoTracking = false);

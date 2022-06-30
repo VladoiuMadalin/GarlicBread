@@ -13,11 +13,11 @@ namespace GameStore.DataLayer.Entities
         public GameStoreContext(DbContextOptions<GameStoreContext> options) :base(options)
         {
         }
-        public DbSet<UserEntity> Users { get; set; }
-        public DbSet<UserEntity> Orders { get; set; }
-        public DbSet<UserEntity> Products { get; set; }
-        public DbSet<UserEntity> ShoppingCarts{ get; set; }
-        public DbSet<CreditCardEntity> CreditCards { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts{ get; set; }
+        public DbSet<CreditCard> CreditCards { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

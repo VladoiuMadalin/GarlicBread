@@ -7,6 +7,6 @@ namespace GameStore.Enums
 {
     public enum Role
     {
-        None, User, Admin
+        User, Admin
     }
 }

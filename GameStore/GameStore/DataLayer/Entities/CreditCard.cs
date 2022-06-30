@@ -1,16 +1,17 @@
-﻿using GameStore.DataLayer.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GameStore.Dtos
+namespace GameStore.DataLayer.Entities
 {
-    public class CreditCardDto
+    
+    public class CreditCard : BaseEntity
     {
-        [MaxLength(12)]
-        [MinLength(12)]
+        [MaxLength(16)]
+        [MinLength(16)]
         public string CardNumber { get; set; }
 
         public string NameOnCard { get; set; }
@@ -21,6 +22,7 @@ namespace GameStore.Dtos
         [MinLength(3)]
         public string Cvc { get; set; }
 
-        public UserEntity User { get; set; }
+        public Guid UserId { get; set; }
+        public User User { get; set; }
     }
 }

@@ -22,8 +22,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 using System.Text;
-using GameStore.DataLayer.Repositories.Interfaces;
-using GameStore.DataLayer.Repositories.Classes;
+
 
 namespace GameStore
 {
